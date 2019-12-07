@@ -16,8 +16,6 @@ class THSTrader:
         print("连接成功!!!")
         self.main_wnd = self.app.top_window()
     
-    
-    
     def buy(self, stock_no, price, amount):
         """ 买入 """
         time.sleep(1)
@@ -66,7 +64,6 @@ class THSTrader:
                 if entrust["成交数量"] == 0:
                     return False
         return True
-    
 
     def get_position(self):
         """ 获取持仓 """
@@ -86,25 +83,27 @@ class THSTrader:
         return self.__get_grid_data()
 
     def __trade(self, stock_no, price, amount):
-        time.sleep(0.2)
+        time.sleep(0.5)
+        self.main_wnd.window(control_id=0x3EF, class_name="Button").click()  # 清空表单
+        time.sleep(0.5)
         self.main_wnd.window(control_id=0x408, class_name="Edit").set_text(str(stock_no))  # 设置股票代码
+        time.sleep(0.5)
         self.main_wnd.window(control_id=0x409, class_name="Edit").set_text(str(price))  # 设置价格
         self.main_wnd.window(control_id=0x40A, class_name="Edit").set_text(str(amount))  # 设置股数目
-        time.sleep(0.2)
+        time.sleep(0.5)
         self.main_wnd.window(control_id=0x3EE, class_name="Button").click()   # 点击卖出or买入
         
-        time.sleep(0.2)
+        time.sleep(0.5)
         self.app.top_window().window(control_id=0x6, class_name='Button').click()  # 确定买入
         self.app.top_window().set_focus()
-        time.sleep(0.2)
+        time.sleep(0.5)
         result = self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text()
         self.app.top_window().set_focus()
-        time.sleep(0.2)
+        time.sleep(0.5)
         try:
             self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 确定
         except:
             pass
-        
         
         return self.__parse_result(result)
 
@@ -122,26 +121,28 @@ class THSTrader:
         time.sleep(0.1)
         keyboard.SendKeys('{DOWN}')
         time.sleep(0.1)
+        keyboard.SendKeys('{DOWN}')
+        time.sleep(0.1)
         keyboard.SendKeys("{ENTER}")
         time.sleep(1)
 
         file_path = "tmp.png"
         
-        while True:
-            self.app.top_window().window(control_id=0x965, class_name='Static').\
-                CaptureAsImage().save(file_path)  # 保存验证码
-    
-            captcha_num = captcha_recognize(file_path)  # 识别验证码
-            print("captcha result-->", captcha_num)
-            self.app.top_window().window(control_id=0x964, class_name='Edit').set_text(captcha_num)  # 模拟输入验证码
-            
-            self.app.top_window().set_focus()
-            keyboard.SendKeys("{ENTER}")   # 模拟发送enter，点击确定
-            try:
-                print(self.app.top_window().window(control_id=0x966, class_name='Static').window_text())
-            except:
-                break
-            time.sleep(0.1)
+        # while True:
+        #     self.app.top_window().window(control_id=0x965, class_name='Static').\
+        #         CaptureAsImage().save(file_path)  # 保存验证码
+        #
+        #     captcha_num = captcha_recognize(file_path)  # 识别验证码
+        #     print("captcha result-->", captcha_num)
+        #     self.app.top_window().window(control_id=0x964, class_name='Edit').set_text(captcha_num)  # 模拟输入验证码
+        #
+        #     self.app.top_window().set_focus()
+        #     keyboard.SendKeys("{ENTER}")   # 模拟发送enter，点击确定
+        #     try:
+        #         print(self.app.top_window().window(control_id=0x966, class_name='Static').window_text())
+        #     except:
+        #         break
+        #     time.sleep(0.1)
 
         data = clipboard.GetData()
         df = pd.read_csv(io.StringIO(data), delimiter='\t', na_filter=False)
